@@ -63,15 +63,21 @@
 
 <script>
 
+    import Axios from 'axios'
     import ConfirmDialog from '../components/ConfirmDialog'
+
+    // Create global Axios instance using the fixed params
+    // @TODO: Store these params using Vuex
+    const async = Axios.create({
+        withCredentials: true,
+        baseURL: 'http://localhost:8000/api/v1/'
+    })
 
     export default {
 
         components: {ConfirmDialog},
 
         data: () => ({
-
-
 
             //The search filter
             search: '',
@@ -92,8 +98,30 @@
                 title: 'Hic sunt dracones',
                 text:  'Tem certeza de que quer excluir este aluno?',
             },
-
         }),
+
+        mounted() {
+
+            // Do login
+            async.post('auth/login', {
+                email:    'admin@edtech.tmp.br',
+                password: 'password'
+            })
+                .then(response => {
+                    switch (response.status) {
+                        case 200:
+                            async.defaults.headers.common['Accept'] = 'application/json'
+                            async.defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token
+
+                            this.init()
+                        break
+
+                        default:
+                            this.$router.push('login');
+                        break
+                    }
+                })
+        },
 
         computed: {
 
@@ -110,6 +138,12 @@
         },
 
         methods: {
+
+            init() {
+
+                console.log('Start getting info from API')
+
+            },
 
             //Show modal to confirm deleting
             userDelete(id) {
