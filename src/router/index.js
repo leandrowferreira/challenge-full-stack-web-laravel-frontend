@@ -1,15 +1,22 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import StudentIndex from '../views/StudentIndex.vue'
+import StudentCreate from '../views/StudentCreate.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Index',
-    component: Home
+    name: 'StudentIndex',
+    component: StudentIndex
   },
+  {
+    path: '/create',
+    name: 'StudentCreate',
+    component: StudentCreate
+  }
+
 ]
 
 const router = new VueRouter({
