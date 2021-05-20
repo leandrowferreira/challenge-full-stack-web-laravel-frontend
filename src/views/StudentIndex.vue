@@ -83,13 +83,10 @@
             search: '',
 
             //Student's array
-            students: [
-                {id: 1,ra: '998',  name: 'Lorem ipsum dolor',     cpf: '12345678910'},
-                {id: 2,ra: '999',  name: 'Ut arcu purus maximus', cpf: '12445779011'},
-                {id: 3,ra: '1000', name: 'Mauris commodo nibh',   cpf: '12545879112'},
-                {id: 4,ra: '1001', name: 'Aenean vitae justo',    cpf: '12645979213'},
-                {id: 5,ra: '1002', name: 'Maecenas porta turpis', cpf: '12746079314'},
-            ],
+            //For sake of simplicity, the API does not implement
+            //pagination. So, all records are present in frontend
+            //at same time, an approach not so good for real life
+            students: [],
 
             //Modal control for excluding records
             showDialog: false,
@@ -121,6 +118,15 @@
                         break
                     }
                 })
+                .catch(e => {
+                    if (e.response) {
+                        switch (e.response.status) {
+                            case 401:
+                                self.$router.push('login');
+                            break
+                        }
+                    }
+                })
         },
 
         computed: {
@@ -141,8 +147,39 @@
 
             init() {
 
-                console.log('Start getting info from API')
+                //Get user's list from API
+                //Notice that the query param is present to filter
+                //users and return only students to this front
+                async.get('users?role=students')
 
+                    .then(response => {
+                        switch (response.status) {
+
+                            //No errors, data incoming 😀
+                            case 200:
+                                this.students = response.data.data
+                            break
+
+                            //Nonsense, given we know our own API
+                            default:
+                                this.$router.push('login');
+                            break;
+                        }
+                    })
+
+                    .catch(e => {
+                        if (e.response) {
+                            switch(e.response.status) {
+                                case 401:
+                                    this.$router.push('login');
+                                break
+
+                                default:
+                                    this.msg = 'Erro HTTP ' + e.response.status
+                                break
+                            }
+                        }
+                    })
             },
 
             //Show modal to confirm deleting
