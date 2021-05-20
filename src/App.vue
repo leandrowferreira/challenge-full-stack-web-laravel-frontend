@@ -3,7 +3,7 @@
 
         <nav-bar></nav-bar>
 
-        <v-main>
+        <v-main class="mx-4 my-4">
             <router-view/>
         </v-main>
     </v-app>
