@@ -46,12 +46,22 @@
             </v-data-table>
         </v-container>
 
+        <confirm-dialog :show="showDialog" :cancel="cancel" :confirm="confirm" :title="modal.title" :description="modal.text" />
+
     </div>
 </template>
 
 <script>
+
+    import ConfirmDialog from '../components/ConfirmDialog'
+
     export default {
+
+        components: {ConfirmDialog},
+
         data: () => ({
+
+
 
             //The search filter
             search: '',
@@ -78,6 +88,10 @@
                     { text: 'Ações', value: 'id',   width:'10%', sortable: false },
                 ]
             },
+        },
+
+        methods: {
+
 
         },
     }
