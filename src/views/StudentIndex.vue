@@ -4,6 +4,8 @@
 
         <v-container fluid class="my-5">
 
+            <v-alert v-show="msg.length" outlined type="warning" prominent border="left" v-html="msg"></v-alert>
+
             <v-data-table
                 dense
                 item-key="id"
@@ -95,6 +97,9 @@
                 title: 'Hic sunt dracones',
                 text:  'Tem certeza de que quer excluir este aluno?',
             },
+
+            //The alert message
+            msg: '',
         }),
 
         mounted() {
@@ -198,9 +203,47 @@
             confirm() {
                 this.showDialog = false
 
-                console.log('excluding ' + this.excludingId)
-            }
+                async.delete('users/' + this.excludingId)
 
+                    .then(response => {
+                        switch(response.status) {
+                            case 204:
+                                this.msg = 'Registro excluído'
+                                this.search = ''
+                                this.removeItemById(this.excludingId)
+                            break
+
+                            default:
+                            break
+                        }
+                    })
+
+                    .catch(e => {
+                        if (e.response) {
+                            switch(e.response.status) {
+                                case 404:
+                                    this.msg = 'Registro não encontrado'
+                                break
+
+                                case 401:
+                                    this.msg = 'Registro não encontrado'
+                                    this.$router.push('login');
+                                break
+
+                                default:
+                                    this.msg = 'Erro HTTP ' + e.response.status
+                                break
+                            }
+                        }
+                    })
+
+            },
+
+            removeItemById(id) {
+                this.students = this.students.filter((item) => {
+                    return item.id != id
+                })
+            },
         },
     }
 </script>
