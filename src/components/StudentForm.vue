@@ -7,8 +7,8 @@
             <v-form ref="form" v-model="valid" lazy-validation>
                 <v-text-field v-model="form.name" :rules="nameRules" label="Nome" maxLength="200" required></v-text-field>
                 <v-text-field v-model="form.email" :rules="emailRules" label="E-mail" maxLength="200" required></v-text-field>
-                <v-text-field v-model="form.ra" v-mask="'####'" :counter="4" maxLength="4" :rules="raRules" label="RA"  required></v-text-field>
-                <v-text-field v-model="form.cpf" v-mask="'###.###.###-##'" :rules="cpfRules" label="CPF"  required></v-text-field>
+                <v-text-field :readonly="isReadOnly('ra')" v-model="form.ra" v-mask="'####'" :counter="4" maxLength="4" :rules="raRules" label="RA"  required></v-text-field>
+                <v-text-field :readonly="isReadOnly('cpf')" v-model="form.cpf" v-mask="'###.###.###-##'" :rules="cpfRules" label="CPF"  required></v-text-field>
 
                 <v-btn large @click="cancel" class="mr-4"><v-icon left>mdi-undo</v-icon> Cancelar</v-btn>
                 <v-btn large color="primary" @click="save(form)"><v-icon left>mdi-account-plus</v-icon> Salvar</v-btn>
@@ -29,7 +29,7 @@
 
         directives: {mask},
 
-        props: ['ra', 'cpf', 'name', 'email'],
+        props: ['id', 'ra', 'cpf', 'name', 'email', 'readonly'],
 
         data: () => ({
 
@@ -105,6 +105,11 @@
         },
 
         methods: {
+
+            isReadOnly(field) {
+                return typeof(this.readonly) != 'undefined' && this.readonly.split(',').includes(field)
+            },
+
             cancel() {
                 this.$emit('cancel')
             },
