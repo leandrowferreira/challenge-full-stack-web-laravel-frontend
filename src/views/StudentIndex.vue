@@ -43,6 +43,16 @@
                     <span>{{ value.substr(0,3) + '.' + value.substr(3,3) + '.' + value.substr(6,3) + '-' + value.substr(9,2) }}</span>
                 </template>
 
+                <template v-slot:[`item.id`]="{ value }">
+                    <v-btn class="mt-2 mr-4 grey--text text--darken-1" small text :to="'/' + value + '/edit'">
+                        <v-icon left>mdi-account-edit</v-icon> Editar
+                    </v-btn>
+
+                    <v-btn class="mb-2 grey--text text--darken-1" small text @click="userDelete(value)">
+                        <v-icon left>mdi-account-cancel</v-icon> Excluir
+                    </v-btn>
+                </template>
+
             </v-data-table>
         </v-container>
 
@@ -74,6 +84,15 @@
                 {id: 4,ra: '1001', name: 'Aenean vitae justo',    cpf: '12645979213'},
                 {id: 5,ra: '1002', name: 'Maecenas porta turpis', cpf: '12746079314'},
             ],
+
+            //Modal control for excluding records
+            showDialog: false,
+            excludingId: null,
+            modal:{
+                title: 'Hic sunt dracones',
+                text:  'Tem certeza de que quer excluir este aluno?',
+            },
+
         }),
 
         computed: {
@@ -92,6 +111,24 @@
 
         methods: {
 
+            //Show modal to confirm deleting
+            userDelete(id) {
+                this.excludingId = id
+                this.showDialog = true
+            },
+
+            //Not for now... Just hide modal
+            cancel() {
+                this.showDialog = false
+                this.excludingId = null
+            },
+
+            //Proceed to removing register
+            confirm() {
+                this.showDialog = false
+
+                console.log('excluding ' + this.excludingId)
+            }
 
         },
     }
