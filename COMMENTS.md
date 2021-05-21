@@ -34,7 +34,8 @@ To develop the frontend solution, some few third party software or library was u
 
 This implementation is like a proof-of-concept, holding only one specific group of use cases (the student management). This is far to be a complete solution. So, tons of works could be done if more time could be consumed:
 
-  - Complete Auth interface (login, logout, password request, register...).
+  - Enhance feedbacks to user actions when waiting *API* responses (message to wait, disable buttons ...).
+  - Complete Auth interface (login, logout, password request, register ...).
   - Implement Websockets to guarantee frontend syncing.
   - Use Vuex to manage the application statement and global constants and variables (such as endpoint and token).
   - Reinforce security to avoid CSRF.
