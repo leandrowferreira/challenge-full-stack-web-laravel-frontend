@@ -2,35 +2,36 @@
     <div class="create">
         <h1 class="subtitle-1 grey--text">Editar aluno</h1>
 
-            <v-alert
-                v-show="errors.length"
-                outlined
-                type="warning"
-                prominent border="left"
-                v-html="errors"
-            />
+        <!-- Feedback message (errors editing record) -->
+        <v-alert
+            outlined
+            prominent
+            border="left"
+            type="warning"
+            v-html="errors"
+            v-show="errors.length"
+        />
 
-            <student-form
-                :key="editingId"
-                :ra="form.ra"
-                :cpf="form.cpf"
-                :name="form.name"
-                :email="form.email"
-                :readonly="'ra,cpf'"
-                @cancel="gotoIndex"
-                @save="trySubmit"
-            />
+        <!-- Student default form custom component -->
+        <student-form
+            :ra="form.ra"
+            :cpf="form.cpf"
+            :key="editingId"
+            @save="trySubmit"
+            :name="form.name"
+            :email="form.email"
+            @cancel="gotoIndex"
+            :readonly="'ra,cpf'"
+        />
 
-            <msg-dialog
-                :show="showDialog"
-                :confirm="confirm"
-                :title="modal.title"
-                :description="modal.text"
-            />
+        <!-- Message dialog custom component -->
+        <msg-dialog
+            :show="showDialog"
+            :confirm="confirm"
+            :title="modal.title"
+            :description="modal.text"
+        />
 
-        <div class="student-edit">
-
-        </div>
     </div>
 
 </template>
@@ -41,26 +42,62 @@
     import MsgDialog from '../components/MsgDialog'
     import StudentForm from '../components/StudentForm'
 
+
+    /**
+     * Local instance of AXIOS
+     * @DOLATER: implements via Vuex
+     */
     const async = Axios.create({
         withCredentials: true,
-        baseURL: 'http://localhost:8000/api/v1/'
+        baseURL: 'http://localhost:8000/api/v1/',
+        headers: {'Accept': 'application/json'},
     })
 
     export default {
 
-        components: {MsgDialog, StudentForm},
+        components: {
+
+            /**
+             * Simple message message
+             */
+            MsgDialog,
+
+
+            /**
+             * Default student form
+             */
+            StudentForm
+        },
+
 
         data: () => ({
 
+            /**
+             * The record being edited.
+             */
+
             editingId: null,
 
+
+            /**
+             * The error list came from API.
+             */
             errors: '',
 
+
+            /**
+             * The modal controls for show and content.
+             */
             showDialog: false,
             modal: {
                 title: 'Concluído',
                 text:  'O cadastrado foi alterado com sucesso.',
             },
+
+
+            /**
+             * A local copy of data came from original record
+             */
 
             form: {
                 ra: '',
@@ -70,25 +107,27 @@
             },
         }),
 
+
         mounted() {
 
-            // Do login
-
-            // The authentication stories where not covered by this challenge.
-            // So, login is here for demonstration purpouses only, to show
-            // that the API access is protected via Bearer token, almost
-            // often obtained using an authentication form
-            // @TODO: remove from here and implement via Vuex State Management)
+            /**
+             * Do login
+             *
+             * The authentication stories were not covered by this challenge.
+             * So, login is here for demonstration purpouses only, to show
+             * that the API access is protected via Bearer token, almost
+             * often obtained using an authentication form
+             *
+             * @DOLATER: remove from here and implement via Vuex State Management
+             */
             async.post('auth/login', {
-                email:    'admin@edtech.tmp.br',
-                password: 'password'
+                email:    this.$userName,
+                password: this.$password
             })
                 .then(response => {
                     switch (response.status) {
                         case 200:
-                            async.defaults.headers.common['Accept'] = 'application/json'
                             async.defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token
-
                             this.init()
                         break
 
@@ -108,9 +147,11 @@
                 })
         },
 
-
         methods: {
 
+            /**
+             * Get user to being edited from API
+             */
             init() {
                 async.get('users/' + this.$route.params.id)
 
@@ -125,18 +166,29 @@
                             break
                         }
                     })
-
             },
 
+
+            /**
+             * Proceed to updating register
+             */
             confirm() {
                 this.showDialog = false
                 this.$router.push('/');
             },
 
+
+            /**
+             * Go to index
+             */
             gotoIndex() {
                 this.$router.push('/')
             },
 
+
+            /**
+             * Try to submit the updates
+             */
             trySubmit(form) {
                 let data = {
                     ra:    form.ra,
@@ -172,7 +224,6 @@
                         }
                     })
             }
-
         },
     }
 

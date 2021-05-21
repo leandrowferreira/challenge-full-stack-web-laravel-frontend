@@ -15,7 +15,6 @@
                     <v-btn color="primary darken-1" text @click="confirm">
                         Ok
                     </v-btn>
-
                 </v-card-actions>
 
             </v-card>

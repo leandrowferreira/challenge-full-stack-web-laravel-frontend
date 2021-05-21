@@ -2,29 +2,29 @@
     <div class="create">
         <h1 class="subtitle-1 grey--text">Novo aluno</h1>
 
-        <div class="student-form">
+        <!-- Feedback message (errors creating record) -->
+        <v-alert
+            outlined
+            prominent
+            border="left"
+            type="warning"
+            v-html="errors"
+            v-show="errors.length"
+        />
 
-            <v-alert
-                v-show="errors.length"
-                outlined
-                type="warning"
-                prominent border="left"
-                v-html="errors"
-            />
+        <!-- Student default form custom component -->
+        <student-form
+            @save="trySubmit"
+            @cancel="gotoIndex"
+        />
 
-            <student-form
-                @cancel="gotoIndex"
-                @save="trySubmit"
-            />
-
-            <msg-dialog
-                :show="showDialog"
-                :confirm="confirm"
-                :title="modal.title"
-                :description="modal.text"
-            />
-
-        </div>
+        <!-- Message dialog custom component -->
+        <msg-dialog
+            :show="showDialog"
+            :confirm="confirm"
+            :title="modal.title"
+            :description="modal.text"
+        />
 
     </div>
 </template>
@@ -35,47 +35,72 @@
     import MsgDialog from '../components/MsgDialog'
     import StudentForm from '../components/StudentForm'
 
+
+    /**
+     * Local instance of AXIOS
+     * @DOLATER: implements via Vuex
+     */
     const async = Axios.create({
         withCredentials: true,
-        baseURL: 'http://localhost:8000/api/v1/'
+        baseURL: 'http://localhost:8000/api/v1/',
+        headers: {'Accept': 'application/json'},
     })
-
 
     export default {
 
-        components: {MsgDialog, StudentForm},
+        components: {
+
+            /**
+             * Simple message message
+             */
+            MsgDialog,
+
+
+            /**
+             * Default student form
+             */
+            StudentForm
+        },
+
 
         data: () => ({
 
+            /**
+             * The error list came from API.
+             */
             errors: '',
 
+
+            /**
+             * The modal controls for show and content.
+             */
             showDialog: false,
             modal: {
                 title: 'Concluído',
                 text:  'O aluno foi cadastrado com sucesso.',
             },
-
         }),
 
 
         mounted() {
 
-            // Do login
-
-            // The authentication stories where not covered by this challenge.
-            // So, login is here for demonstration purpouses only, to show
-            // that the API access is protected via Bearer token, almost
-            // often obtained using an authentication form
-            // @TODO: remove from here and implement via Vuex State Management)
-
+            /**
+             * Do login
+             *
+             * The authentication stories were not covered by this challenge.
+             * So, login is here for demonstration purpouses only, to show
+             * that the API access is protected via Bearer token, almost
+             * often obtained using an authentication form
+             *
+             * @DOLATER: remove from here and implement via Vuex State Management
+             */
             async.post('auth/login', {
-                email:    'admin@edtech.tmp.br',
-                password: 'password'
+                email:    this.$userName,
+                password: this.$password
             })
                 .then(response => {
                     switch (response.status) {
                         case 200:
-                            async.defaults.headers.common['Accept'] = 'application/json'
                             async.defaults.headers.common['Authorization'] = response.data.token_type + ' ' + response.data.access_token
                         break
 
@@ -96,17 +121,29 @@
                 })
         },
 
+
         methods: {
 
+            /**
+             * Single "ok" button action
+             */
             confirm() {
                 this.showDialog = false
-                this.$router.push('/');
+                this.gotoIndex()
             },
 
+
+            /**
+             * Go to index
+             */
             gotoIndex() {
                 this.$router.push('/')
             },
 
+
+            /**
+             * Try to submit new student
+             */
             trySubmit(form) {
 
                 let data = {
@@ -142,11 +179,7 @@
                             }
                         }
                     })
-
-
-
             },
-
         }
     }
 </script>
